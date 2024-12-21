@@ -20,13 +20,50 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  */
 class VigenereCipheringMachine {
-  encrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  constructor(type = true){
+    this.type = type;
   }
-  decrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  codeALetter(letter, keyLetter){
+    const letterCode = letter.charCodeAt(0) - 97;
+    const keyLetterCode = keyLetter.charCodeAt(0) - 97;
+    return String.fromCharCode((letterCode + keyLetterCode + 26) % 26 + 65);
+  }
+  decodeALetter(letter, keyLetter){
+    const letterCode = letter.charCodeAt(0) - 97;
+    const keyLetterCode = keyLetter.charCodeAt(0) - 97;
+    return String.fromCharCode((letterCode - keyLetterCode + 26) % 26 + 65);
+  }
+  encrypt(quote, key) {
+    if (!quote || !key) throw new Error('Incorrect arguments!');
+    let tempQuote = quote.toLowerCase();
+    let tempKey = key.toLowerCase();
+    let result = '';
+    let k = 0;
+    for (let i = 0; i < quote.length; i++) {
+      if (tempQuote[i] >= 'a' && tempQuote[i] <= 'z') {
+        result += this.codeALetter(tempQuote[i], tempKey[k]);
+        k++;
+        if (k === key.length) k = 0;
+      }
+      else result += tempQuote[i];
+    }
+    return this.type ? result : result.split('').reverse().join('');
+  }
+  decrypt(quote, key) {
+    if (!quote || !key) throw new Error('Incorrect arguments!');
+    let tempQuote = quote.toLowerCase();
+    let tempKey = key.toLowerCase();
+    let result = '';
+    let k = 0;
+    for (let i = 0; i < quote.length; i++) {
+      if (tempQuote[i] >= 'a' && tempQuote[i] <= 'z') {
+        result += this.decodeALetter(tempQuote[i], tempKey[k]);
+        k++;
+        if (k === key.length) k = 0;
+      }
+      else result += tempQuote[i];
+    }
+    return this.type ? result : result.split('').reverse().join('');
   }
 }
 
